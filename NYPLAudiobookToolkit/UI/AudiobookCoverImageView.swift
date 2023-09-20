@@ -8,7 +8,7 @@ public class AudiobookCoverImageView: UIImageView {
 
         isUserInteractionEnabled = true
         accessibilityIdentifier = "cover_art"
-        layer.cornerRadius = 10
+        layer.cornerRadius = 1
         layer.masksToBounds = true
         contentMode = .scaleAspectFit
         isAccessibilityElement = true

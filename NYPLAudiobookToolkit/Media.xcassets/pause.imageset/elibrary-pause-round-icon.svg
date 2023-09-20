@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="120px" height="120px" viewBox="0 0 120 120" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title>Group 9</title>
+    <g id="Käyttöliittymä" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="Group-9">
+            <circle id="Oval-Copy-3" fill="#D9F1EF" cx="60" cy="60" r="60"></circle>
+            <g id="pause-solid" transform="translate(40, 36)" fill="#000000" fill-rule="nonzero">
+                <path d="M6.15,0 C2.7546875,0 0,2.6875 0,6 L0,42 C0,45.3125 2.7546875,48 6.15,48 L10.25,48 C13.6453125,48 16.4,45.3125 16.4,42 L16.4,6 C16.4,2.6875 13.6453125,0 10.25,0 L6.15,0 Z M30.75,0 C27.3546875,0 24.6,2.6875 24.6,6 L24.6,42 C24.6,45.3125 27.3546875,48 30.75,48 L34.85,48 C38.2453125,48 41,45.3125 41,42 L41,6 C41,2.6875 38.2453125,0 34.85,0 L30.75,0 Z" id="Shape"></path>
+            </g>
+        </g>
+    </g>
+</svg>

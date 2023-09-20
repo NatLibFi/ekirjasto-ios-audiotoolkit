@@ -45,16 +45,18 @@ final class PlaybackControlView: UIView {
     }
 
     private func setToPauseIcon() {
+        self.playButton.text = "Pause"
         self.playButton.image = self.pauseImage
         self.playButton.accessibilityLabel = Strings.Generic.pause
     }
 
     private func setToPlayIcon() {
+        self.playButton.text = "Play"
         self.playButton.image = self.playImage
         self.playButton.accessibilityLabel = Strings.Generic.play
     }
 
-    private var horizontalPadding = CGFloat(30)
+    private var horizontalPadding = CGFloat(20)
     private let skipBackView: TextOverImageView = { () -> TextOverImageView in
         let view = TextOverImageView()
         view.image = UIImage(named: "skip_back", in: Bundle.audiobookToolkit(), compatibleWith: nil)
@@ -85,6 +87,7 @@ final class PlaybackControlView: UIView {
     
     private let playButton: ImageControlView = { () -> ImageControlView in
         let imageView = ImageControlView()
+        imageView.text = "Play"
         imageView.accessibilityIdentifier = "play_button"
         return imageView
     }()
@@ -138,9 +141,9 @@ final class PlaybackControlView: UIView {
         self.skipForwardView.accessibilityLabel = String(format: skipFrowardFormat, self.skipForwardValue)
 
         compactConstraints = NSLayoutConstraint.autoCreateConstraintsWithoutInstalling {
-            self.playButton.autoSetDimensions(to: CGSize(width: 56, height: 56))
-            self.skipBackView.autoSetDimensions(to: CGSize(width: 66, height: 66))
-            self.skipForwardView.autoSetDimensions(to: CGSize(width: 66, height: 66))
+            self.playButton.autoSetDimensions(to: CGSize(width: 80, height: 80))
+            self.skipBackView.autoSetDimensions(to: CGSize(width: 56, height: 56))
+            self.skipForwardView.autoSetDimensions(to: CGSize(width: 56, height: 56))
             self.skipBackView.autoPinEdge(.right, to: .left, of: self.playButton, withOffset: -self.horizontalPadding)
             self.skipForwardView.autoPinEdge(.left, to: .right, of: self.playButton, withOffset: self.horizontalPadding)
         }

@@ -98,7 +98,7 @@ final class ScrubberView: UIView {
     let rightLabel = UILabel()
     let topLabel = { () -> UIScrubberLabel in
         let label = UIScrubberLabel()
-        label.font = UIFont.systemFont(ofSize: 12)
+        label.font = UIFont.systemFont(ofSize: 14)
         label.textAlignment = .center
         return label
     }()
@@ -116,7 +116,7 @@ final class ScrubberView: UIView {
     var labelWidthConstraints: [NSLayoutConstraint] = []
     var state: ScrubberUIState = ScrubberUIState(
         gripperHeight: 36,
-        progressColor: UIColor.black,
+        progressColor: UIColor(named: "ColorEkirjastoGreen")!,
         progress: ScrubberProgress(offset: 0, duration: 0, timeLeftInBook: 0),
         middleText: "",
         scrubbing: false
@@ -147,7 +147,7 @@ final class ScrubberView: UIView {
         self.layoutIfNeeded()
     }
 
-    init(tintColor: UIColor = UIColor.red) {
+    init(tintColor: UIColor = UIColor(named: "ColorEkirjastoBlack")!) {
         self.trimColor = tintColor
         super.init(frame: CGRect.zero)
         self.setupView()
@@ -164,7 +164,8 @@ final class ScrubberView: UIView {
         self.addSubview(self.rightLabel)
         self.addSubview(self.middleLabel)
     
-        self.progressBackground.backgroundColor = UIColor.darkGray
+        self.progressBackground.layer.cornerRadius = 3
+        self.progressBackground.backgroundColor = UIColor(named: "ColorEkirjastoLightestGreen")!
         self.progressBackground.autoSetDimension(.height, toSize: CGFloat(self.barHeight))
         self.progressBackground.autoPinEdge(.left, to: .left, of: self)
         self.progressBackground.autoPinEdge(.right, to: .right, of: self)
@@ -180,10 +181,10 @@ final class ScrubberView: UIView {
         self.leftLabel.setContentHuggingPriority(UILayoutPriority.defaultHigh, for: NSLayoutConstraint.Axis.horizontal)
         self.leftLabel.setContentHuggingPriority(UILayoutPriority.defaultHigh, for: NSLayoutConstraint.Axis.vertical)
         self.leftLabel.setContentCompressionResistancePriority(UILayoutPriority.defaultLow, for: NSLayoutConstraint.Axis.horizontal)
-        self.leftLabel.font = UIFont.systemFont(ofSize: 12)
+        self.leftLabel.font = UIFont.systemFont(ofSize: 14)
         self.leftLabel.accessibilityIdentifier = "progress_leftLabel"
         self.leftLabel.text = self.state.progress.playheadText
-        self.leftLabel.textColor = .black
+        self.leftLabel.textColor = UIColor(named: "ColorEkirjastoLabel")!
         
         self.rightLabel.autoPinEdge(.right, to: .right, of: self)
         self.rightLabel.autoAlignAxis(.horizontal, toSameAxisOf: self.middleLabel)
@@ -193,10 +194,10 @@ final class ScrubberView: UIView {
         self.rightLabel.setContentHuggingPriority(UILayoutPriority.defaultHigh, for: NSLayoutConstraint.Axis.horizontal)
         self.rightLabel.setContentHuggingPriority(UILayoutPriority.defaultHigh, for: NSLayoutConstraint.Axis.vertical)
         self.rightLabel.setContentCompressionResistancePriority(UILayoutPriority.defaultLow, for: NSLayoutConstraint.Axis.horizontal)
-        self.rightLabel.font = UIFont.systemFont(ofSize: 12)
+        self.rightLabel.font = UIFont.systemFont(ofSize: 14)
         self.rightLabel.accessibilityIdentifier = "progress_rightLabel"
         self.rightLabel.text = self.state.progress.timeLeftText
-        self.rightLabel.textColor = .black
+        self.rightLabel.textColor = UIColor(named: "ColorEkirjastoLabel")!
 
         self.middleLabel.autoPinEdge(.left, to: .right, of: self.leftLabel)
         self.middleLabel.autoPinEdge(.right, to: .left, of: self.rightLabel)
@@ -207,9 +208,9 @@ final class ScrubberView: UIView {
         self.middleLabel.setContentHuggingPriority(UILayoutPriority.defaultLow, for: NSLayoutConstraint.Axis.horizontal)
         self.middleLabel.setContentHuggingPriority(UILayoutPriority.defaultHigh, for: NSLayoutConstraint.Axis.vertical)
         self.middleLabel.setContentCompressionResistancePriority(UILayoutPriority.defaultHigh, for: NSLayoutConstraint.Axis.horizontal)
-        self.middleLabel.font = UIFont.boldSystemFont(ofSize: 16)
+        self.middleLabel.font = UIFont.boldSystemFont(ofSize: 14)
         self.middleLabel.accessibilityIdentifier = "progress_rightLabel"
-        self.middleLabel.textColor = .black
+        self.middleLabel.textColor = UIColor(named: "ColorEkirjastoLabel")!
 
         self.labelWidthConstraints.append(leftLabelWidth)
         self.labelWidthConstraints.append(rightLabelWidth)
@@ -226,7 +227,7 @@ final class ScrubberView: UIView {
         self.topLabel.setContentHuggingPriority(UILayoutPriority.defaultLow, for: NSLayoutConstraint.Axis.horizontal)
         self.topLabel.setContentHuggingPriority(UILayoutPriority.defaultHigh, for: NSLayoutConstraint.Axis.vertical)
         self.topLabel.setContentCompressionResistancePriority(UILayoutPriority.defaultHigh, for: NSLayoutConstraint.Axis.horizontal)
-        self.topLabel.textColor = .black
+        self.topLabel.textColor = UIColor(named: "ColorEkirjastoLabel")!
 
         self.gripper.backgroundColor = self.state.progressColor
         self.gripper.autoPinEdge(.top, to: .bottom, of: self.topLabel, withOffset: self.padding / 2)

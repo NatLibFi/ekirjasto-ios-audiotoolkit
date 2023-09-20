@@ -62,20 +62,19 @@ class TextOverImageView: UIControl {
         self.backgroundImageView.autoPinEdgesToSuperviewEdges()
         self.addSubview(self.textLabel)
         self.textLabel.accessibilityIdentifier = "TextOverImageView.textLabel"
-        self.textLabel.font = UIFont.systemFont(ofSize: 20)
+        self.textLabel.font = UIFont.systemFont(ofSize: 12)
         self.textLabel.textAlignment = .center
         self.textLabel.numberOfLines = 1
-        self.textLabel.autoCenterInSuperview()
+        self.textLabel.autoPinEdge(.top, to: .bottom, of: self.backgroundImageView, withOffset: 20)
         self.textLabel.setContentHuggingPriority(.defaultHigh, for: .vertical)
-        self.textLabel.textColor = .black
+        self.textLabel.textColor = .label
         self.addSubview(self.subtextLabel)
         self.subtextLabel.accessibilityIdentifier = "TextOverImageView.subtextLabel"
         self.subtextLabel.font = UIFont.systemFont(ofSize: 12)
-        self.subtextLabel.textAlignment = .center
-        self.subtextLabel.numberOfLines = 1
-        self.subtextLabel.autoPinEdge(.top, to: .bottom, of: self.textLabel, withOffset: -6)
-        self.subtextLabel.autoAlignAxis(.vertical, toSameAxisOf: self.textLabel)
-        self.subtextLabel.textColor = .black
+        self.subtextLabel.autoPinEdge(.left, to: .right, of: self.textLabel, withOffset: 2)
+        self.subtextLabel.autoAlignAxis(.horizontal, toSameAxisOf: self.textLabel)
+        self.subtextLabel.textColor = .label
+        self.textLabel.autoAlignAxis(.vertical, toSameAxisOf: self.backgroundImageView, withOffset: -12)
     }
 
     required init?(coder aDecoder: NSCoder) {

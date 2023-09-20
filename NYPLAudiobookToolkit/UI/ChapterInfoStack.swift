@@ -53,14 +53,14 @@ class ChapterInfoStack: UIView {
         self.topLabel.textAlignment = .center
         self.topLabel.setContentHuggingPriority(.defaultLow, for: .vertical)
         self.topLabel.setContentCompressionResistancePriority(.required, for: .vertical)
-        self.topLabel.textColor = UIColor.black
+        self.topLabel.textColor = UIColor(named: "ColorEkirjastoLabel")!
 
-        self.bottomLabel.autoPinEdge(.top, to: .bottom, of: self.topLabel)
+        self.bottomLabel.autoPinEdge(.top, to: .bottom, of: self.topLabel, withOffset: 5)
         self.bottomLabel.autoPinEdge(.left, to: .left, of: self)
         self.bottomLabel.autoPinEdge(.right, to: .right, of: self)
         self.bottomLabel.autoPinEdge(.bottom, to: .bottom, of: self)
         self.bottomLabel.textAlignment = .center
-        self.bottomLabel.textColor = UIColor.darkGray
+        self.bottomLabel.textColor = UIColor(named: "ColorEkirjastoLabel")!
 
         self.bottomLabel.setContentHuggingPriority(.defaultLow, for: .vertical)
         self.bottomLabel.setContentCompressionResistancePriority(.required, for: .vertical)
@@ -74,10 +74,10 @@ class ChapterInfoStack: UIView {
 
     func enableConstraints() {
         if traitCollection.verticalSizeClass == .regular && traitCollection.horizontalSizeClass == .regular {
-            self.topLabel.font = UIFont.boldSystemFont(ofSize: 22)
+            self.topLabel.font = UIFont.boldSystemFont(ofSize: 32)
             self.bottomLabel.font = UIFont.boldSystemFont(ofSize: 22)
         } else {
-            self.topLabel.font = UIFont.boldSystemFont(ofSize: 16)
+            self.topLabel.font = UIFont.boldSystemFont(ofSize: 26)
             self.bottomLabel.font = UIFont.systemFont(ofSize: 16)
         }
     }

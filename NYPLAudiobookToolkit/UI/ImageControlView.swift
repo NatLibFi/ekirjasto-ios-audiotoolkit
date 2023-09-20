@@ -10,6 +10,16 @@ import UIKit
 import PureLayout
 
 class ImageControlView: UIControl {
+    var text: String? {
+        get {
+            return self.textLabel.text
+        }
+        set(newText) {
+            self.textLabel.text = newText
+        }
+    }
+    
+    private let textLabel = UILabel()
 
     var image: UIImage? {
         get {
@@ -46,5 +56,15 @@ class ImageControlView: UIControl {
 
         self.addSubview(self.imageView)
         self.imageView.autoPinEdgesToSuperviewEdges()
+        
+        self.addSubview(self.textLabel)
+        self.textLabel.accessibilityIdentifier = "TextOverImageView.textLabel"
+        self.textLabel.font = UIFont.systemFont(ofSize: 12)
+        self.textLabel.textAlignment = .center
+        self.textLabel.numberOfLines = 1
+        self.textLabel.autoPinEdge(.top, to: .bottom, of: self.imageView, withOffset: 8)
+        self.textLabel.autoAlignAxis(.vertical, toSameAxisOf: self.imageView)
+        self.textLabel.setContentHuggingPriority(.defaultHigh, for: .vertical)
+        self.textLabel.textColor = .label
     }
 }

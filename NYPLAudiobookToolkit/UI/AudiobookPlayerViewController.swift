@@ -28,13 +28,13 @@ let SkipTimeInterval: Double = 15
     private let padding = CGFloat(12)
 
     private let toolbar = UIToolbar()
-    private let toolbarHeight: CGFloat = 44
+    private let toolbarHeight: CGFloat = 60
     private let toolbarButtonWidth: CGFloat = 75.0
 
     private let audioRouteButtonWidth: CGFloat = 50.0
     private let speedBarButtonIndex = 1
-    private let audioRoutingBarButtonIndex = 3
-    private let sleepTimerBarButtonIndex = 5
+    private let audioRoutingBarButtonIndex = 5
+    private let sleepTimerBarButtonIndex = 8
     private let addBookmarBarButtonindex = 7
     private let sleepTimerDefaultText = "☾"
     private let sleepTimerDefaultAccessibilityLabel = DisplayStrings.sleepTimer
@@ -95,15 +95,15 @@ let SkipTimeInterval: Double = 15
         self.gradient.colors = [ startColor, UIColor.white.cgColor]
         self.gradient.startPoint = CGPoint.zero
         self.gradient.endPoint = CGPoint(x: 1, y: 1)
-        self.view.layer.insertSublayer(self.gradient, at: 0)
-   
+        //self.view.layer.insertSublayer(self.gradient, at: 0)
+        self.view.layer.backgroundColor = UIColor(named: "ColorEkirjastoBackground")!.cgColor
         let tocImage = UIImage(
             named: "table_of_contents",
             in: Bundle.audiobookToolkit(),
             compatibleWith: nil
         )
         let tocBbi = UIBarButtonItem(
-            image: tocImage,
+            image: UIImage(named: "TOC"),
             style: .plain,
             target: self,
             action: #selector(AudiobookPlayerViewController.tocWasPressed)
@@ -145,7 +145,7 @@ let SkipTimeInterval: Double = 15
         self.playbackControlView.autoPinEdge(toSuperviewEdge: .leading, withInset: 0, relation: .greaterThanOrEqual)
         self.playbackControlView.autoPinEdge(toSuperviewEdge: .trailing, withInset: 0, relation: .greaterThanOrEqual)
         self.playbackControlView.autoPinEdge(toSuperviewEdge: .top, withInset: 0, relation: .greaterThanOrEqual)
-        self.playbackControlView.autoPinEdge(toSuperviewEdge: .bottom, withInset: 0, relation: .greaterThanOrEqual)
+        self.playbackControlView.autoPinEdge(toSuperviewEdge: .bottom, withInset: 40, relation: .greaterThanOrEqual)
 
         playbackControlViewContainer.autoSetDimension(.height, toSize: 75, relation: .greaterThanOrEqual)
         playbackControlViewContainer.autoPinEdge(toSuperviewEdge: .left)
@@ -199,12 +199,20 @@ let SkipTimeInterval: Double = 15
             title: "test title",
             audiobookID: "12345")
 
+        self.toolbar.tintColor = UIColor(named: "ColorEkirjastoGreen")
+        self.toolbar.barTintColor = UIColor(named: "ColorEkirjastoBackground")
+        self.toolbar.isTranslucent = false
+        self.toolbar.clipsToBounds = true
+        let topBorder = UIView(frame: CGRect(x: 0, y: 0, width:self.view.frame.width, height: 1))
+        topBorder.backgroundColor = UIColor(named: "ColorEkirjastoGreen")
+        self.toolbar.addSubview(topBorder)
+        
         self.toolbar.autoPinEdge(toSuperviewSafeArea: .bottom, withInset: 0)
         self.toolbar.autoPinEdge(.left, to: .left, of: self.view)
         self.toolbar.autoPinEdge(.right, to: .right, of: self.view)
         self.toolbar.autoSetDimension(.height, toSize: self.toolbarHeight)
         let flexibleSpace = UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil)
-        var items: [UIBarButtonItem] = [flexibleSpace, flexibleSpace, flexibleSpace, flexibleSpace, flexibleSpace]
+        var items: [UIBarButtonItem] = [flexibleSpace, flexibleSpace, flexibleSpace, flexibleSpace, flexibleSpace, flexibleSpace, flexibleSpace]
         var playbackSpeedText = HumanReadablePlaybackRate(rate: self.audiobookManager.audiobook.player.playbackRate).value
         if self.audiobookManager.audiobook.player.playbackRate == .normalTime {
             playbackSpeedText = NSLocalizedString("1.0×",
@@ -212,12 +220,19 @@ let SkipTimeInterval: Double = 15
                                                   value: "1.0×",
                                                   comment: "Default title to explain that button changes the speed of playback.")
         }
-        let speed =  UIBarButtonItem(
+        /*let speed =  UIBarButtonItem(
             title: playbackSpeedText,
             style: .plain,
             target: self,
             action: #selector(AudiobookPlayerViewController.speedWasPressed(_:))
-        )
+        )*/
+        let customSpeedButton = UIButton(type: .custom)
+        customSpeedButton.setImage(UIImage(named: "speed", in: Bundle.audiobookToolkit(), compatibleWith: nil), for: .normal)
+        customSpeedButton.setTitle("Speed", for: .normal)
+        customSpeedButton.titleLabel?.font =  UIFont(name: "Asap-Regular", size: 12)
+        customSpeedButton.imageTopLabelDown(padding: 10, paddingTop: 15)
+        customSpeedButton.addTarget(self, action: #selector(AudiobookPlayerViewController.speedWasPressed(_:)), for: .touchUpInside)
+        let speed = UIBarButtonItem(customView: customSpeedButton)
         speed.width = toolbarButtonWidth
         let playbackButtonName = DisplayStrings.playbackSpeed
         let playbackRateDescription = HumanReadablePlaybackRate(rate: self.audiobookManager.audiobook.player.playbackRate).accessibleDescription
@@ -227,17 +242,24 @@ let SkipTimeInterval: Double = 15
         let audioRoutingItem = self.audioRoutingBarButtonItem()
         items.insert(audioRoutingItem, at: self.audioRoutingBarButtonIndex)
         let texts = self.sleepTimerTextFor(sleepTimer: self.audiobookManager.sleepTimer, chapter: chapter)
-        let sleepTimer = UIBarButtonItem(
+        /*let sleepTimer = UIBarButtonItem(
             title: texts.title,
             style: .plain,
             target: self,
             action: #selector(AudiobookPlayerViewController.sleepTimerWasPressed(_:))
-        )
+        )*/
+        let customSleepTimerButton = UIButton(type: .custom)
+        customSleepTimerButton.setImage(UIImage(named: "sleepTimer"), for: .normal)
+        customSleepTimerButton.setTitle("Sleep timer", for: .normal)
+        customSleepTimerButton.titleLabel?.font =  UIFont(name: "Asap-Regular", size: 12)
+        customSleepTimerButton.imageTopLabelDown(padding: 10, paddingTop: 15)
+        customSleepTimerButton.addTarget(self, action: #selector(AudiobookPlayerViewController.sleepTimerWasPressed(_:)), for: .touchUpInside)
+        let sleepTimer = UIBarButtonItem(customView: customSleepTimerButton)
         sleepTimer.width = toolbarButtonWidth
         sleepTimer.accessibilityLabel = texts.accessibilityLabel
 
         items.insert(sleepTimer, at: self.sleepTimerBarButtonIndex)
-        items.insert(self.bookmarkButton, at: self.addBookmarBarButtonindex)
+        //items.insert(self.bookmarkButton, at: self.addBookmarBarButtonindex)
         
         self.toolbar.setItems(items, animated: true)
         self.seekBar.setOffset(
@@ -441,6 +463,7 @@ let SkipTimeInterval: Double = 15
     }
 
     func audioRoutingBarButtonItem() -> UIBarButtonItem {
+        let containerView = UIStackView()
         let view: UIView
         if #available(iOS 11.0, *) {
             view = AVRoutePickerView()
@@ -459,7 +482,19 @@ let SkipTimeInterval: Double = 15
             volumeView.sizeToFit()
             view = volumeView
         }
-        let buttonItem = UIBarButtonItem(customView: view)
+        let title = UILabel(frame: CGRect(x: 0, y: 0, width: toolbarButtonWidth, height: 20))
+        title.text = "Share"
+        title.font = UIFont(name: "Asap-Regular", size: 12)
+        title.textAlignment = .center
+        title.numberOfLines = 1
+        
+        containerView.addArrangedSubview(view)
+        containerView.addArrangedSubview(title)
+        containerView.axis = .vertical
+        containerView.spacing = 1
+        view.autoPinEdge(toSuperviewEdge: .top, withInset: 7)
+        
+        let buttonItem = UIBarButtonItem(customView: containerView)
         buttonItem.width = audioRouteButtonWidth
         buttonItem.isAccessibilityElement = true
         buttonItem.accessibilityLabel = DisplayStrings.playbackDestination
