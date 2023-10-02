@@ -26,9 +26,12 @@ import AVFoundation
 
 @objc public protocol AudiobookPlaybackPositionDelegate {
     func saveListeningPosition(at location: String, completion: ((_ serverID: String?) -> Void)?)
-    func saveBookmark(at location: String, completion: ((_ serverID: String?) -> Void)?)
-    func deleteBookmark(at location: ChapterLocation, completion: @escaping (Bool) -> Void)
-    func fetchBookmarks(for audiobook: String, completion: @escaping ([NYPLAudiobookToolkit.ChapterLocation]) -> Void)
+}
+
+@objc public protocol AudiobookBookmarkDelegate {
+    func saveBookmark(at location: ChapterLocation, completion: ((_ location: ChapterLocation?) -> Void)?)
+    func deleteBookmark(at location: ChapterLocation, completion: ((Bool) -> Void)?)
+    func fetchBookmarks(completion: @escaping ([NYPLAudiobookToolkit.ChapterLocation]) -> Void)
 }
 
 @objc public protocol AudiobookManagerTimerDelegate {
@@ -48,7 +51,8 @@ private var waitingForPlayer: Bool = false
 /// center / airplay.
 @objc public protocol AudiobookManager {
     var refreshDelegate: RefreshDelegate? { get set }
-    var annotationsDelegate: AudiobookPlaybackPositionDelegate? { get set }
+    var playbackPositionDelegate: AudiobookPlaybackPositionDelegate? { get set }
+    var bookmarkDelegate: AudiobookBookmarkDelegate? { get set }
     var timerDelegate: AudiobookManagerTimerDelegate? { get set }
 
     var networkService: AudiobookNetworkService { get }
@@ -62,18 +66,22 @@ private var waitingForPlayer: Bool = false
 
     static func setLogHandler(_ handler: @escaping LogHandler)
     func saveLocation()
-    func saveBookmark() throws
-    func fetchBookmarks() async throws -> [ChapterLocation]
+    func saveBookmark(completion: @escaping (Error?) -> Void)
+    func fetchBookmarks(completion: (([ChapterLocation]) -> Void)?)
+    func deleteBookmark(at location: ChapterLocation, completion: @escaping (Bool) -> Void)
     var playbackCompletionHandler: (() -> ())? { get set }
 }
 
 enum BookmarkError: Error {
     case bookmarkAlreadyExists
+    case bookmarkFailedToSave
     
     var localizedDescription: String {
         switch self {
         case .bookmarkAlreadyExists:
             return Strings.Error.bookmarkAlreadyExistsError
+        case .bookmarkFailedToSave:
+            return Strings.Error.failedToSaveBookmarkError
         }
     }
 }
@@ -82,9 +90,12 @@ enum BookmarkError: Error {
 /// to be used by the AudibookDetailViewController to respond to UI events.
 @objcMembers public final class DefaultAudiobookManager: NSObject, AudiobookManager {
     public weak var timerDelegate: AudiobookManagerTimerDelegate?
+    weak var tocDelegate: AudiobookTableOfContentsDelegate?
     public weak var refreshDelegate: RefreshDelegate?
-    public weak var annotationsDelegate: AudiobookPlaybackPositionDelegate?
+    public weak var playbackPositionDelegate: AudiobookPlaybackPositionDelegate?
+    public weak var bookmarkDelegate: AudiobookBookmarkDelegate?
     public var audiobookBookmarks: [ChapterLocation] = []
+    private var playbackTrackerDelegate: AudiobookPlaybackTrackerDelegate?
 
     static public func setLogHandler(_ handler: @escaping LogHandler) {
         sharedLogHandler = handler
@@ -113,10 +124,11 @@ enum BookmarkError: Error {
 
     private(set) public var timer: Timer?
     private let mediaControlHandler: MediaControlHandler
-    public init (metadata: AudiobookMetadata, audiobook: Audiobook, networkService: AudiobookNetworkService) {
+    public init (metadata: AudiobookMetadata, audiobook: Audiobook, networkService: AudiobookNetworkService, playbackTrackerDelegate: AudiobookPlaybackTrackerDelegate? = nil) {
         self.metadata = metadata
         self.audiobook = audiobook
         self.networkService = networkService
+        self.playbackTrackerDelegate = playbackTrackerDelegate
         self.mediaControlHandler = MediaControlHandler(
             togglePlaybackHandler: { (_) -> MPRemoteCommandHandlerStatus in
                 if audiobook.player.isPlaying {
@@ -157,7 +169,7 @@ enum BookmarkError: Error {
         })
         super.init()
         self.audiobook.player.registerDelegate(self)
-        self.setBookmarks()
+        self.fetchBookmarks()
         DispatchQueue.main.async {
             self.timer = Timer.scheduledTimer(
                 timeInterval: 1,
@@ -173,11 +185,12 @@ enum BookmarkError: Error {
         ATLog(.debug, "DefaultAudiobookManager is deinitializing.")
     }
 
-    public convenience init(metadata: AudiobookMetadata, audiobook: Audiobook) {
+    public convenience init(metadata: AudiobookMetadata, audiobook: Audiobook, playbackTrackerDelegate: AudiobookPlaybackTrackerDelegate? = nil) {
         self.init(
             metadata: metadata,
             audiobook: audiobook,
-            networkService: DefaultAudiobookNetworkService(spine: audiobook.spine)
+            networkService: DefaultAudiobookNetworkService(spine: audiobook.spine),
+            playbackTrackerDelegate: playbackTrackerDelegate
         )
     }
 
@@ -216,47 +229,57 @@ enum BookmarkError: Error {
             return
         }
 
-        annotationsDelegate?.saveListeningPosition(at: string) {
+        playbackPositionDelegate?.saveListeningPosition(at: string) {
             guard let _ = $0 else {
                 ATLog(.error, "Failed to save to post current location.")
                 return
             }
         }
     }
+    
+    public func deleteBookmark(at location: ChapterLocation, completion: @escaping (Bool) -> Void) {
+        bookmarkDelegate?.deleteBookmark(at: location, completion: { [weak self] success in
+            if success {
+                self?.audiobookBookmarks.removeAll(where: { $0.isSimilar(to: location) })
+            }
 
-    public func saveBookmark() throws {
-        guard audiobookBookmarks.first(where: { $0.description == audiobook.player.currentChapterLocation?.description } ) == nil else {
-            throw BookmarkError.bookmarkAlreadyExists
-        }
+            completion(success)
+        })
+    }
 
-        guard let data = audiobook.player.currentChapterLocation?.toData(),
-                let string = String(data: data, encoding: .utf8) else {
-            ATLog(.error, "Failed to save to post bookmark at current location.")
+    public func saveBookmark(completion: @escaping (Error?) -> Void) {
+        guard audiobookBookmarks.first(where: { $0.isSimilar(to: audiobook.player.currentChapterLocation) }) == nil else {
+            completion(BookmarkError.bookmarkAlreadyExists)
             return
         }
 
-        annotationsDelegate?.saveBookmark(at: string) { [unowned self] annotationId in
-            guard let annotationId = annotationId else {
-                ATLog(.error, "Failed to save to post bookmark at current location.")
-                return
+        guard let currentLocation = audiobook.player.currentChapterLocation else {
+            ATLog(.error, "Failed to save to post bookmark at current location.")
+            completion(BookmarkError.bookmarkFailedToSave)
+            return
+        }
+
+        bookmarkDelegate?.saveBookmark(at: currentLocation, completion: { location in
+            if let savedLocation = location {
+                self.audiobookBookmarks.append(savedLocation)
+                completion(nil)
             }
-
-            self.audiobook.player.currentChapterLocation?.annotationId = annotationId
-            self.audiobookBookmarks.append(self.audiobook.player.currentChapterLocation)
-        }
+        })
     }
 
-    public func fetchBookmarks() async throws -> [ChapterLocation] {
-        return try await withUnsafeThrowingContinuation { continuation in
-            annotationsDelegate?.fetchBookmarks(for: audiobook.annotationsId, completion: { bookmarks in
-                continuation.resume(returning: bookmarks)
-            })
-        }
-    }
-    
-    private func setBookmarks() {
-        Task {
-            audiobookBookmarks = try await fetchBookmarks()
+    public func fetchBookmarks(completion: (([ChapterLocation]) -> Void)? = nil) {
+        bookmarkDelegate?.fetchBookmarks { [weak self] bookmarks in
+            self?.audiobookBookmarks = bookmarks.sorted {
+                let formatter = ISO8601DateFormatter()
+                guard let date1 = formatter.date(from: $0.lastSavedTimeStamp),
+                      let date2 = formatter.date(from: $1.lastSavedTimeStamp)
+                else {
+                    return false
+                }
+                return date1 > date2
+            }
+            
+            completion?(self?.audiobookBookmarks ?? [])
         }
     }
 }
@@ -265,19 +288,24 @@ extension DefaultAudiobookManager: PlayerDelegate {
     public func player(_ player: Player, didBeginPlaybackOf chapter: ChapterLocation) {
         waitingForPlayer = false
         self.mediaControlHandler.enableMediaControlCommands()
+        playbackTrackerDelegate?.playbackStarted()
     }
     public func player(_ player: Player, didStopPlaybackOf chapter: ChapterLocation) {
         waitingForPlayer = false
+        playbackTrackerDelegate?.playbackStopped()
     }
-    public func player(_ player: Player, didFailPlaybackOf chapter: ChapterLocation, withError error: NSError?) { }
+    public func player(_ player: Player, didFailPlaybackOf chapter: ChapterLocation, withError error: NSError?) {
+        playbackTrackerDelegate?.playbackStopped()
+    }
     public func player(_ player: Player, didComplete chapter: ChapterLocation) {
         waitingForPlayer = false
+        playbackTrackerDelegate?.playbackStopped()
 
         let sortedSpine = self.networkService.spine.map{ $0.chapter }.sorted{ $0 < $1 }
         guard let firstChapter = sortedSpine.first,
-            let lastChapter = sortedSpine.last else {
-                ATLog(.error, "Audiobook Spine is corrupt.")
-                return
+              let lastChapter = sortedSpine.last else {
+            ATLog(.error, "Audiobook Spine is corrupt.")
+            return
         }
         if lastChapter.inSameChapter(other: chapter) {
             self.playbackCompletionHandler?()
@@ -285,8 +313,9 @@ extension DefaultAudiobookManager: PlayerDelegate {
         }
     }
     public func playerDidUnload(_ player: Player) {
-      self.mediaControlHandler.teardown()
-      self.timer?.invalidate()
+        self.mediaControlHandler.teardown()
+        self.timer?.invalidate()
+        playbackTrackerDelegate?.playbackStopped()
     }
 }
 
