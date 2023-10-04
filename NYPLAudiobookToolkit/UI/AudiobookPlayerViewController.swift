@@ -108,6 +108,7 @@ let SkipTimeInterval: Double = 15
             target: self,
             action: #selector(AudiobookPlayerViewController.tocWasPressed)
         )
+        tocBbi.tintColor = UIColor(named: "ColorEkirjastoBlack")
         tocBbi.width = audioRouteButtonWidth
         tocBbi.accessibilityLabel = DisplayStrings.tableOfContents
         tocBbi.accessibilityHint = DisplayStrings.chapterSelectionAccessibility
@@ -653,7 +654,7 @@ let SkipTimeInterval: Double = 15
     func middleTextFor(chapter: ChapterLocation) -> String {
         let defaultTitleFormat = DisplayStrings.trackAt
         let indexString = oneBasedSpineIndex() ?? "--"
-        return chapter.title ?? String(format: defaultTitleFormat, indexString)
+        return (chapter.title ?? String(format: defaultTitleFormat, indexString)) + " (\(String(describing: oneBasedSpineIndex()!)) / \(String(self.audiobookManager.audiobook.spine.count)))"
     }
 
     func playbackSpeedTextFor(speedText: String) -> String {
