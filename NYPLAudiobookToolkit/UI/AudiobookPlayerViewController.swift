@@ -654,7 +654,7 @@ let SkipTimeInterval: Double = 15
     func middleTextFor(chapter: ChapterLocation) -> String {
         let defaultTitleFormat = DisplayStrings.trackAt
         let indexString = oneBasedSpineIndex() ?? "--"
-        return (chapter.title ?? String(format: defaultTitleFormat, indexString)) + " (\(String(describing: oneBasedSpineIndex()!)) / \(String(self.audiobookManager.audiobook.spine.count)))"
+        return (chapter.title ?? String(format: defaultTitleFormat, indexString)) + " (\(String(describing: oneBasedSpineIndex()!))/\(String(self.audiobookManager.audiobook.spine.count)))"
     }
 
     func playbackSpeedTextFor(speedText: String) -> String {
