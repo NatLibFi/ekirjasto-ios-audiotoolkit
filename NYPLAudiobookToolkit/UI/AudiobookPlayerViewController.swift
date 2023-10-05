@@ -33,8 +33,8 @@ let SkipTimeInterval: Double = 15
 
     private let audioRouteButtonWidth: CGFloat = 50.0
     private let speedBarButtonIndex = 1
-    private let audioRoutingBarButtonIndex = 5
-    private let sleepTimerBarButtonIndex = 8
+    private let audioRoutingBarButtonIndex = 6
+    private let sleepTimerBarButtonIndex = 10
     private let addBookmarBarButtonindex = 7
     private let sleepTimerDefaultText = "☾"
     private let sleepTimerDefaultAccessibilityLabel = DisplayStrings.sleepTimer
@@ -213,7 +213,7 @@ let SkipTimeInterval: Double = 15
         self.toolbar.autoPinEdge(.right, to: .right, of: self.view)
         self.toolbar.autoSetDimension(.height, toSize: self.toolbarHeight)
         let flexibleSpace = UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil)
-        var items: [UIBarButtonItem] = [flexibleSpace, flexibleSpace, flexibleSpace, flexibleSpace, flexibleSpace, flexibleSpace, flexibleSpace]
+        var items: [UIBarButtonItem] = [flexibleSpace, flexibleSpace, flexibleSpace, flexibleSpace, flexibleSpace, flexibleSpace, flexibleSpace, flexibleSpace, flexibleSpace]
         var playbackSpeedText = HumanReadablePlaybackRate(rate: self.audiobookManager.audiobook.player.playbackRate).value
         if self.audiobookManager.audiobook.player.playbackRate == .normalTime {
             playbackSpeedText = NSLocalizedString("1.0×",
@@ -654,7 +654,7 @@ let SkipTimeInterval: Double = 15
     func middleTextFor(chapter: ChapterLocation) -> String {
         let defaultTitleFormat = DisplayStrings.trackAt
         let indexString = oneBasedSpineIndex() ?? "--"
-        return (chapter.title ?? String(format: defaultTitleFormat, indexString)) + " (\(String(describing: oneBasedSpineIndex()!))/\(String(self.audiobookManager.audiobook.spine.count)))"
+        return (chapter.title ?? indexString) + " (\(String(describing: oneBasedSpineIndex()!))/\(String(self.audiobookManager.audiobook.spine.count)))"
     }
 
     func playbackSpeedTextFor(speedText: String) -> String {
