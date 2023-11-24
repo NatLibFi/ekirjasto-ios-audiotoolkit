@@ -1,0 +1,23 @@
+{
+  "pins" : [
+    {
+      "identity" : "purelayout",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/PureLayout/PureLayout",
+      "state" : {
+        "revision" : "5561683c96dc49b023c1299bfe4f6fbeed5f8199",
+        "version" : "3.1.9"
+      }
+    },
+    {
+      "identity" : "transifex-swift",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/transifex/transifex-swift/",
+      "state" : {
+        "revision" : "e983af3184c456f6061620667a455aa95e99df32",
+        "version" : "1.0.2"
+      }
+    }
+  ],
+  "version" : 2
+}
