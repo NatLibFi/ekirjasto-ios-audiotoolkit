@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="120px" height="120px" viewBox="0 0 120 120" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title>Group 2</title>
+    <g id="Ellibs" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="e-kirjasto-äänikirja" transform="translate(-251, -942)">
+            <g id="Group-2" transform="translate(251, 942)">
+                <circle id="Oval" fill="#D9F1EF" cx="60" cy="60" r="60"></circle>
+                <g id="play-solid" transform="translate(40, 36)" fill="#000000" fill-rule="nonzero">
+                    <path d="M7.79427083,0.756045282 C6.2140625,-0.218782334 4.228125,-0.250919509 2.61588542,0.659633759 C1.00364583,1.57018703 0,3.28416965 0,5.14812575 L0,42.8557434 C0,44.7196995 1.00364583,46.4336822 2.61588542,47.3442354 C4.228125,48.2547887 6.2140625,48.2119391 7.79427083,47.2478239 L38.5442708,28.3940151 C40.0710938,27.462037 41,25.8016163 41,24.0019346 C41,22.2022528 40.0710938,20.5525446 38.5442708,19.6098541 L7.79427083,0.756045282 Z" id="Path"></path>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>

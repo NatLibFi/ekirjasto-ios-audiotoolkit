@@ -133,49 +133,76 @@ struct AudiobookPlayerView: View {
                 Text("My Books")
             }
         }
-        .foregroundColor(Color(.label))
+        .foregroundColor(Color("ColorEkirjastoGreen"))
         .padding(.leading, -6)
     }
 
     @ViewBuilder
     private func skipButton(_ imageName: String, textLabel: String, action: @escaping () -> Void) -> some View {
         // Button size: 66 compact, 96 regular
-        let size: CGFloat = horizontalSizeClass == .compact ? 66 : 96
-        Button(action: action) {
-            ToolkitImage(name: imageName, renderingMode: .template)
-                .overlay(
-                    VStack(spacing: -4) {
-                        Text("\(Int(playbackModel.skipTimeInterval))")
-                            .font(.system(size: 20))
-                            .offset(x: -1)
-                        Text("sec")
-                            .font(.caption)
-                    }
-                        .offset(y: 4)
-                )
+        let size: CGFloat = horizontalSizeClass == .compact ? 56 : 56
+        VStack {
+            Spacer()
+            Button(action: action) {
+                ToolkitImage(name:imageName ,renderingMode: .original)
+                    /*.overlay(
+                        VStack(spacing: -4) {
+                            Text("\(Int(playbackModel.skipTimeInterval))")
+                                .font(.system(size: 20))
+                                .offset(x: -1)
+                            Text("sec")
+                                .font(.caption)
+                        }
+                            .offset(y: 4)
+                    )*/
                 .frame(width: size, height: size)
+            
+            }
+                .accessibility(label: Text(textLabel))
+            Spacer()
+            HStack(alignment: .bottom , spacing: 2) {
+                Text("\(Int(playbackModel.skipTimeInterval))")
+                //.font(.system(size: 20))
+                    .font(.system(size: 12))
+                    .offset(x: -1)
+                Text("sec")
+                //.font(.caption)
+                    .font(.system(size: 12))
+            }
         }
-        .accessibility(label: Text(textLabel))
-        .foregroundColor(.primary)
+
     }
     
     @ViewBuilder
     private func playButton(isPlaying: Bool, textLabel: String, action: @escaping () -> Void) -> some View {
         // Button size: 56 compact, 80 regular
-        let size: CGFloat = horizontalSizeClass == .compact ? 56 : 80
-        Button(action: action) {
-            ZStack {
-                ToolkitImage(name: "pause", renderingMode: .template)
-                    .opacity(isPlaying ? 1 : 0)
-                    .frame(width: size, height: size)
-                ToolkitImage(name: "play", renderingMode: .template)
-                    .opacity(isPlaying ? 0 : 1)
-                    .frame(width: size, height: size)
-                    .offset(x: 7) // makes the button visually centered
+        let size: CGFloat = 80//horizontalSizeClass == .compact ? 56 : 80
+        VStack{
+            Spacer()
+            Button(action: action) {
+                ZStack {
+                    ToolkitImage(name: "pause", renderingMode: .original)
+                        .opacity(isPlaying ? 1 : 0)
+                        .frame(width: size, height: size)
+                    ToolkitImage(name: "play", renderingMode: .original)
+                        .opacity(isPlaying ? 0 : 1)
+                        .frame(width: size, height: size)
+                        .offset(x: 7) // makes the button visually centered
+                }
+                
             }
+            .accessibility(label: Text(isPlaying ? "Pause" : "Play"))
+            Spacer()
+            ZStack(alignment: .bottom) {
+                Text("Pause")
+                    .font(.system(size: 12))
+                    .opacity(isPlaying ? 1 : 0 )
+                Text("Play")
+                    .font(.system(size: 12))
+                    .opacity(isPlaying ? 0 : 1 )
+            }.offset(x: 7)
         }
-        .foregroundColor(.primary)
-        .accessibility(label: Text(isPlaying ? "Pause" : "Play"))
+
     }
     
     @ViewBuilder
@@ -236,12 +263,13 @@ struct AudiobookPlayerView: View {
     
     @ViewBuilder
     private var playbackControlsView: some View {
-        HStack(spacing: 40) {
+        HStack(/*alignment: .top ,*/spacing: 40) {
             skipButton("skip_back", textLabel: "skip back", action: playbackModel.skipBack)
             playButton(isPlaying: playbackModel.isPlaying, textLabel: "play button", action: playbackModel.playPause)
             skipButton("skip_forward", textLabel: "skip forward", action: playbackModel.skipForward)
         }
-        .frame(height: 66)
+        .frame(height: 110)
+        //.frame(height: 66)
     }
     
     @ViewBuilder
@@ -258,6 +286,7 @@ struct AudiobookPlayerView: View {
                         } label: {
                             Text(playbackRateText)
                         }
+                            .foregroundColor(Color.init("ColorEkirjastoGreen"))
                             .actionSheet(isPresented: $showPlaybackSpeed) {
                                 ActionSheet(title: Text(DisplayStrings.playbackSpeed), buttons: playbackRateButtons)
                             }
@@ -278,6 +307,7 @@ struct AudiobookPlayerView: View {
                             Text(sleepTimerText)
                         }
                             .accessibility(label: Text(sleepTimerAccessibilityLabel))
+                            .foregroundColor(Color.init("ColorEkirjastoGreen"))
                             .actionSheet(isPresented: $showSleepTimer) {
                                 ActionSheet(title: Text(DisplayStrings.sleepTimer), buttons: sleepTimerButtons)
                             }
@@ -292,18 +322,19 @@ struct AudiobookPlayerView: View {
                         } label: {
                             ToolkitImage(name: "bookmark", renderingMode: .template)
                                 .frame(height: 20)
+                                .foregroundColor(Color.init("ColorEkirjastoGreen"))
                         }
                     )
             }
             .frame(minHeight: 40)
-            .foregroundColor(.white)
             .padding()
         }
         .background(
             Rectangle()
-                .fill(Color(.darkGray))
+                .fill(Color.white)
                 .edgesIgnoringSafeArea([.bottom])
         )
+        
     }
     
     // MARK: - Property labels
@@ -445,7 +476,7 @@ struct AudiobookPlayerView_Previews: PreviewProvider {
 struct AVRoutePickerViewRepresentable: UIViewRepresentable {
     func makeUIView(context: Context) -> AVRoutePickerView {
         let picker = AVRoutePickerView()
-        picker.tintColor = .white
+        picker.tintColor = UIColor(named: "ColorEkirjastoGreen")
         return picker
     }
     
@@ -472,15 +503,15 @@ struct PlaybackSliderView: View {
         GeometryReader { geometry in
             ZStack(alignment: .leading) {
                 Rectangle()
-                    .fill(.gray)
+                    .fill(Color("ColorEkirjastoLightestGreen"))
                     .frame(height: trackHeight)
                 
                 Rectangle()
-                    .fill(Color( .label))
+                    .fill(Color("ColorEkirjastoGreen"))
                     .frame(width: offsetX(in: geometry.size, for: value), height: trackHeight)
                 
                 Capsule()
-                    .fill(Color.red)
+                    .fill(Color.black)
                     .frame(width: thumbWidth, height: thumbHeight)
                     .offset(x: offsetX(in: geometry.size, for: value))
                     .gesture(
