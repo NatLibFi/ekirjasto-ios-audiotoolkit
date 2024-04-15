@@ -66,7 +66,8 @@ final class LCPDownloadTask: DownloadTask {
             ATLog(.error, "Could not find caches directory.")
             return nil
         }
-        guard let hashedUrl = url.path.sha256?.hexString else {
+        let toBeHashed = "\(url.path)-\(key)"
+        guard let hashedUrl = toBeHashed.sha256?.hexString else {
             ATLog(.error, "Could not create a valid hash from download task ID.")
             return nil
         }
