@@ -23,6 +23,9 @@ struct AudiobookPlayerView: View {
     @State private var showPlaybackSpeed = false
     @State private var showSleepTimer = false
     
+    @State private var isChanging = false
+    @State private var wasPlaying = false
+    
     init(model: AudiobookPlaybackModel) {
         self.playbackModel = model
     }
@@ -53,7 +56,20 @@ struct AudiobookPlayerView: View {
                                 .font(.caption)
                             
                             PlaybackSliderView(value: playbackModel.playbackProgress) { newValue in
+                                if !isChanging {
+                                    isChanging = true
+                                    wasPlaying = playbackModel.isPlaying
+                                    if wasPlaying {
+                                        playbackModel.playPause()
+                                    }
+                                }
                                 playbackModel.move(to: newValue)
+                            } onChangeEnded: {
+                                isChanging = false
+                                if wasPlaying {
+                                    playbackModel.playPause()
+                                    wasPlaying = false
+                                }
                             }
                             .padding(.horizontal)
                             
@@ -498,6 +514,7 @@ struct AVRoutePickerViewWrapper: View {
 struct PlaybackSliderView: View {
     var value: Double
     var onChange: (_ value: Double) -> Void
+    var onChangeEnded: () -> Void
     
     var body: some View {
         GeometryReader { geometry in
@@ -511,7 +528,7 @@ struct PlaybackSliderView: View {
                     .frame(width: offsetX(in: geometry.size, for: value), height: trackHeight)
                 
                 Capsule()
-                    .fill(Color.black)
+                    .fill(Color.primary)
                     .frame(width: thumbWidth, height: thumbHeight)
                     .offset(x: offsetX(in: geometry.size, for: value))
                     .gesture(
@@ -519,7 +536,9 @@ struct PlaybackSliderView: View {
                             .onChanged { gesture in
                                 let value = max(0, min(1, Double(gesture.location.x / (geometry.size.width - thumbWidth) )))
                                 onChange(value)
-                            }
+                            }.onEnded({ gesture in
+                                onChangeEnded()
+                            })
                     )
             }
         }
