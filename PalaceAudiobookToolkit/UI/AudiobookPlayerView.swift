@@ -146,7 +146,7 @@ struct AudiobookPlayerView: View {
         } label: {
             HStack(spacing: 4) {
                 Image(systemName: "chevron.left")
-                Text(Strings.Generic.navTitle)
+                Text(self.playbackModel.audiobookManager.navBackTitle)
             }
         }
         .foregroundColor(Color("ColorEkirjastoGreen"))

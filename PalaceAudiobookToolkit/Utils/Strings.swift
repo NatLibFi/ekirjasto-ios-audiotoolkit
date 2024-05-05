@@ -54,7 +54,6 @@ struct Strings {
     }
     
     struct Generic {
-        static let navTitle = NSLocalizedString("My Books", comment: "")
         static let downloading = NSLocalizedString("Downloading:", value: "Downloading:", comment: "")
         static let downloadingFormatted = NSLocalizedString("Downloading: %@%%", value: "Downloading: %@%%", comment: "The percentage of the chapter that has been downloaded, formatting for string should be localized at this point.")
         static let loading = NSLocalizedString("Downloading: %@%%", value: "Downloading: %@%%", comment: "The percentage of the chapter that has been downloaded, formatting for string should be localized at this point.")

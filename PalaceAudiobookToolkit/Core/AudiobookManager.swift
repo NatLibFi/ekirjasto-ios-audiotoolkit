@@ -56,6 +56,7 @@ private var waitingForPlayer: Bool = false
     var timerDelegate: AudiobookManagerTimerDelegate? { get set }
 
     var networkService: AudiobookNetworkService { get }
+    var navBackTitle: String { get }
     var metadata: AudiobookMetadata { get }
     var audiobook: Audiobook { get }
 
@@ -103,6 +104,7 @@ enum BookmarkError: Error {
     public var playbackCompletionHandler: (() -> ())?
 
     public private(set) var networkService: AudiobookNetworkService
+    public let navBackTitle: String
     public let metadata: AudiobookMetadata
     public let audiobook: Audiobook
 
@@ -126,10 +128,11 @@ enum BookmarkError: Error {
 
     private(set) public var timer: Timer?
     private let mediaControlHandler: MediaControlHandler
-    public init (metadata: AudiobookMetadata, audiobook: Audiobook, networkService: AudiobookNetworkService, playbackTrackerDelegate: AudiobookPlaybackTrackerDelegate? = nil) {
+    public init (metadata: AudiobookMetadata, audiobook: Audiobook, networkService: AudiobookNetworkService, navBackTitle: String? = nil, playbackTrackerDelegate: AudiobookPlaybackTrackerDelegate? = nil) {
         self.metadata = metadata
         self.audiobook = audiobook
         self.networkService = networkService
+        self.navBackTitle = navBackTitle ?? Strings.Generic.back
         self.playbackTrackerDelegate = playbackTrackerDelegate
         self.mediaControlHandler = MediaControlHandler(
             togglePlaybackHandler: { (_) -> MPRemoteCommandHandlerStatus in
@@ -187,11 +190,12 @@ enum BookmarkError: Error {
         ATLog(.debug, "DefaultAudiobookManager is deinitializing.")
     }
 
-    public convenience init(metadata: AudiobookMetadata, audiobook: Audiobook, playbackTrackerDelegate: AudiobookPlaybackTrackerDelegate? = nil) {
+    public convenience init(metadata: AudiobookMetadata, audiobook: Audiobook, navBackTitle: String? = nil, playbackTrackerDelegate: AudiobookPlaybackTrackerDelegate? = nil) {
         self.init(
             metadata: metadata,
             audiobook: audiobook,
             networkService: DefaultAudiobookNetworkService(spine: audiobook.spine),
+            navBackTitle: navBackTitle,
             playbackTrackerDelegate: playbackTrackerDelegate
         )
     }
