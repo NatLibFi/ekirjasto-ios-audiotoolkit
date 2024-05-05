@@ -146,7 +146,7 @@ struct AudiobookPlayerView: View {
         } label: {
             HStack(spacing: 4) {
                 Image(systemName: "chevron.left")
-                Text("My Books")
+                Text(Strings.Generic.navTitle)
             }
         }
         .foregroundColor(Color("ColorEkirjastoGreen"))
@@ -166,7 +166,7 @@ struct AudiobookPlayerView: View {
                             Text("\(Int(playbackModel.skipTimeInterval))")
                                 .font(.system(size: 20))
                                 .offset(x: -1)
-                            Text("sec")
+                            Text(Strings.Generic.sec)
                                 .font(.caption)
                         }
                             .offset(y: 4)
@@ -181,7 +181,7 @@ struct AudiobookPlayerView: View {
                 //.font(.system(size: 20))
                     .font(.system(size: 12))
                     .offset(x: -1)
-                Text("sec")
+                Text(Strings.Generic.sec)
                 //.font(.caption)
                     .font(.system(size: 12))
             }
@@ -207,13 +207,13 @@ struct AudiobookPlayerView: View {
                 }
                 
             }
-            .accessibility(label: Text(isPlaying ? "Pause" : "Play"))
+            .accessibility(label: Text(isPlaying ? Strings.Generic.pause : Strings.Generic.play))
             Spacer()
             ZStack(alignment: .bottom) {
-                Text("Pause")
+                Text(Strings.Generic.pause)
                     .font(.system(size: 12))
                     .opacity(isPlaying ? 1 : 0 )
-                Text("Play")
+                Text(Strings.Generic.play)
                     .font(.system(size: 12))
                     .opacity(isPlaying ? 0 : 1 )
             }.offset(x: 7)
@@ -226,7 +226,7 @@ struct AudiobookPlayerView: View {
         let progressHeight: CGFloat = 6
         HStack(alignment: .bottom) {
             HStack {
-                Text("Downloading:")
+                Text(Strings.Generic.downloading)
                 ZStack {
                     GeometryReader { geometry in
                         Capsule()
