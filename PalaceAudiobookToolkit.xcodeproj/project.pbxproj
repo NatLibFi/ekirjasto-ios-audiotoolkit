@@ -494,7 +494,7 @@
 			isa = PBXProject;
 			attributes = {
 				LastSwiftUpdateCheck = 0920;
-				LastUpgradeCheck = 0930;
+				LastUpgradeCheck = 1540;
 				ORGANIZATIONNAME = "The Palace Project";
 				TargetAttributes = {
 					7B54418B200EA7C20047B6C6 = {
@@ -577,6 +577,7 @@
 		};
 		E6EF9A1C218CE5D9000CE559 /* Copy Frameworks (Carthage) */ = {
 			isa = PBXShellScriptBuildPhase;
+			alwaysOutOfDate = 1;
 			buildActionMask = 2147483647;
 			files = (
 			);
