@@ -185,6 +185,10 @@ class OpenAccessPlayer: NSObject, Player {
     {
         self.isLoaded = false
         self.avQueuePlayer.removeAllItems()
+        // Clean up all decrypted files
+        if let downloadTask = self.cursor.currentElement.downloadTask as? LCPDownloadTask {
+            downloadTask.deleteCached()
+        }
         self.notifyDelegatesOfUnloadRequest()
     }
     
