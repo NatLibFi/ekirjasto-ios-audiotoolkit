@@ -34,31 +34,7 @@ final class LCPDownloadTask: DownloadTask {
             }
         }
     }
-    // Delete all mp3 files in Cache
-    func deleteCachedMp3Files() throws {
-        let cacheDirectory = FileManager.default.urls(for: .cachesDirectory, in: .userDomainMask).first!
-        let fileManager = FileManager.default
 
-        do {
-            let contents = try fileManager.contentsOfDirectory(at: cacheDirectory, includingPropertiesForKeys: nil)
-
-            for fileURL in contents {
-               if fileURL.pathExtension.lowercased() == "mp3" {
-                    do {
-                         try fileManager.removeItem(at: fileURL)
-                         print("Deleted MP3 file: \(fileURL.lastPathComponent)")
-                     } catch {
-                        print("Error deleting MP3 file: \(fileURL.lastPathComponent), error: \(error)")
-                    }
-                }
-            }
-            print("Finished checking for MP3 files in cache.")
-        } catch {
-            print("Error getting contents of cache directory: \(error)")
-            throw error
-        }
-    }
-    
     /// All encrypted files are included in the audiobook, download progress is 1.0
     let downloadProgress: Float = 1.0
     
