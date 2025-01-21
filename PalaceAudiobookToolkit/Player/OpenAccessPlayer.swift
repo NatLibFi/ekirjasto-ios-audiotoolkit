@@ -180,12 +180,23 @@ class OpenAccessPlayer: NSObject, Player {
             notifyDelegatesOfPauseFor(chapter: self.chapterAtCurrentCursor)
         }
     }
-
-    func unload()
-    {
+    func unload() {
         self.isLoaded = false
+        
+        // First, pause playback
+        self.pause()
+        
+        // Clean up current chapter
+        if let lcpTask = cursor.currentElement.downloadTask as? LCPDownloadTask {
+            lcpTask.delete()
+            ATLog(.debug, "Cleaned up current chapter files during unload")
+        }
+        // Clean up all decrypted files
+        LCPDownloadTask.cleanAllDecryptedFiles()
+        
         self.avQueuePlayer.removeAllItems()
         self.notifyDelegatesOfUnloadRequest()
+        ATLog(.debug, "Unload completed")
     }
     
     func skipPlayhead(_ timeInterval: TimeInterval, completion: ((ChapterLocation)->())? = nil) -> () {
@@ -205,8 +216,18 @@ class OpenAccessPlayer: NSObject, Player {
     /// - Parameter newLocation: Chapter Location with possible playhead offset
     ///   outside the bounds of audio for the current chapter
     func playAtLocation(_ newLocation: ChapterLocation, completion: Completion? = nil) {
+        let currentChapter = self.chapterAtCurrentCursor
         let newPlayhead = move(cursor: self.cursor, to: newLocation)
 
+        // Clean up files when changing chapters
+        if !currentChapter.inSameChapter(other: newLocation) {
+            // Clean current chapter
+            if let lcpTask = cursor.currentElement.downloadTask as? LCPDownloadTask {
+                lcpTask.delete()
+                ATLog(.debug, "Cleaned up current chapter files during jump")
+            }
+        }
+        
         guard let newItemDownloadStatus = assetFileStatus(newPlayhead.cursor.currentElement.downloadTask) else {
             let error = NSError(domain: errorDomain, code: OpenAccessPlayerError.unknown.rawValue, userInfo: nil)
             notifyDelegatesOfPlaybackFailureFor(chapter: newPlayhead.location, error)
@@ -238,7 +259,6 @@ class OpenAccessPlayer: NSObject, Player {
                 }
             }
         case .missing(_):
-            // TODO: Could eventually handle streaming from here.
             guard self.playerIsReady != .readyToPlay || self.playerIsReady != .failed else {
                 let error = NSError(domain: errorDomain, code: OpenAccessPlayerError.downloadNotFinished.rawValue, userInfo: nil)
                 self.notifyDelegatesOfPlaybackFailureFor(chapter: newLocation, error)
@@ -382,6 +402,17 @@ class OpenAccessPlayer: NSObject, Player {
     }
 
     deinit {
+        // Ensure playback is stopped
+        self.pause()
+        
+        // Clean up current chapter
+        if let lcpTask = cursor.currentElement.downloadTask as? LCPDownloadTask {
+            lcpTask.delete()
+        }
+        
+        // Clean up cache directory for any remaining files
+        LCPDownloadTask.cleanAllDecryptedFiles()
+        
         self.removePlayerObservers()
         try? AVAudioSession.sharedInstance().setActive(false, options: [])
     }
@@ -453,10 +484,16 @@ class OpenAccessPlayer: NSObject, Player {
     /// Not needed for explicit seek operations. Check the player for any more
     /// AVPlayerItems so that we can potentially rebuild the queue if more
     /// downloads have completed since the queue was last built.
-    @objc func currentPlayerItemEnded(item: AVPlayerItem? = nil)
-    {
+    // Update currentPlayerItemEnded to handle cleanup during chapter transitions
+    @objc func currentPlayerItemEnded(item: AVPlayerItem? = nil) {
         DispatchQueue.main.async {
             let currentCursor = self.cursor
+            
+            // Clean up the current chapter's files before moving to next
+            if let lcpTask = currentCursor.currentElement.downloadTask as? LCPDownloadTask {
+                lcpTask.delete()
+            }
+            
             if let nextCursor = self.cursor.next() {
                 self.cursor = nextCursor
                 
