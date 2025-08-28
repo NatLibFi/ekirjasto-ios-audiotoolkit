@@ -149,7 +149,7 @@ struct AudiobookPlayerView: View {
                 Text(self.playbackModel.audiobookManager.navBackTitle)
             }
         }
-        .foregroundColor(Color("ColorEkirjastoGreen"))
+        .foregroundColor(Color("ColorEkirjastoBlack"))
         .padding(.leading, -6)
     }
 
@@ -302,7 +302,7 @@ struct AudiobookPlayerView: View {
                         } label: {
                             Text(playbackRateText)
                         }
-                            .foregroundColor(Color.init("ColorEkirjastoGreen"))
+                            .foregroundColor(Color.init("ColorEkirjastoBlack"))
                             .actionSheet(isPresented: $showPlaybackSpeed) {
                                 ActionSheet(title: Text(DisplayStrings.playbackSpeed), buttons: playbackRateButtons)
                             }
@@ -323,7 +323,7 @@ struct AudiobookPlayerView: View {
                             Text(sleepTimerText)
                         }
                             .accessibility(label: Text(sleepTimerAccessibilityLabel))
-                            .foregroundColor(Color.init("ColorEkirjastoGreen"))
+                            .foregroundColor(Color.init("ColorEkirjastoBlack"))
                             .actionSheet(isPresented: $showSleepTimer) {
                                 ActionSheet(title: Text(DisplayStrings.sleepTimer), buttons: sleepTimerButtons)
                             }
@@ -338,7 +338,7 @@ struct AudiobookPlayerView: View {
                         } label: {
                             ToolkitImage(name: "bookmark", renderingMode: .template)
                                 .frame(height: 20)
-                                .foregroundColor(Color.init("ColorEkirjastoGreen"))
+                                .foregroundColor(Color.init("ColorEkirjastoBlack"))
                         }
                     )
             }
@@ -347,7 +347,7 @@ struct AudiobookPlayerView: View {
         }
         .background(
             Rectangle()
-                .fill(Color.white)
+                .fill(Color.init("ColorEkirjastoBackground"))
                 .edgesIgnoringSafeArea([.bottom])
         )
         
@@ -492,7 +492,7 @@ struct AudiobookPlayerView_Previews: PreviewProvider {
 struct AVRoutePickerViewRepresentable: UIViewRepresentable {
     func makeUIView(context: Context) -> AVRoutePickerView {
         let picker = AVRoutePickerView()
-        picker.tintColor = UIColor(named: "ColorEkirjastoGreen")
+        picker.tintColor = UIColor(named: "ColorEkirjastoBlack")
         return picker
     }
     
