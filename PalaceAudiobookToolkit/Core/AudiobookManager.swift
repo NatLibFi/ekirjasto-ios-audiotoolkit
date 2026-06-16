@@ -245,10 +245,11 @@ enum BookmarkError: Error {
     
     public func deleteBookmark(at location: ChapterLocation, completion: @escaping (Bool) -> Void) {
         bookmarkDelegate?.deleteBookmark(at: location, completion: { [weak self] success in
-            if success {
-                self?.audiobookBookmarks.removeAll(where: { $0.isSimilar(to: location) })
-            }
-
+            // The delegate removes the bookmark from local storage regardless of
+            // the server round-trip, which reports failure whenever annotation
+            // sync is unavailable. Reflect the local deletion in the in-memory
+            // list unconditionally so the row disappears instead of lingering.
+            self?.audiobookBookmarks.removeAll(where: { $0.isSimilar(to: location) })
             completion(success)
         })
     }
