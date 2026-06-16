@@ -123,10 +123,14 @@ struct AudiobookNavigationView: View {
             }
         } else {
             List {
-                ForEach(playback.audiobookManager.audiobookBookmarks, id: \.annotationId) { bookmark in
-                    bookmarkCell(for: bookmark)
+                // Identify rows by index, not annotationId: locally-created
+                // bookmarks (and all bookmarks when server sync is unavailable)
+                // share an empty annotationId, which collapses the list into a
+                // single repeated row under SwiftUI's identity rules.
+                ForEach(Array(playback.audiobookManager.audiobookBookmarks.enumerated()), id: \.offset) { item in
+                    bookmarkCell(for: item.element)
                         .onTapGesture {
-                            selectedLocation = bookmark
+                            selectedLocation = item.element
                             presentationMode.wrappedValue.dismiss()
                         }
                 }
