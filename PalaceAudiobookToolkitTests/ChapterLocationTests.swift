@@ -45,6 +45,27 @@ class ChapterLocationTests: XCTestCase {
         XCTAssertEqual(location?.type, "LocatorAudioBookTime")
     }
     
+    func testDecoderPreservesMillisecondPrecision() {
+        let json = """
+            {
+                "time":13408,
+                "audiobookID":"urn:uuid:b309844e-7d4e-403e-945b-fbc78acd5e03",
+                "part":0,
+                "title":"Chapter: 3",
+                "duration":18123,
+                "chapter":2,
+                "@type":"LocatorAudioBookTime"
+            }
+        """
+        let data = json.data(using: .utf8)!
+        guard let location = ChapterLocation.fromData(data) else {
+            return XCTFail("Chapter location could not be decoded")
+        }
+
+        XCTAssertEqual(location.playheadOffset, 13.408, accuracy: 0.000001)
+        XCTAssertEqual(location.duration, 18.123, accuracy: 0.000001)
+    }
+
     func testDecoderLegacyData() {
         let data = legacyTestJSON.data(using: .utf8)!
         let location = ChapterLocation.fromData(data)
