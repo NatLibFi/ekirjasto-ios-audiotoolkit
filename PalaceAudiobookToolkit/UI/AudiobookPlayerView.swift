@@ -419,7 +419,7 @@ struct AudiobookPlayerView: View {
     
     private var timeLeftInBookText: String {
         let timeLeft = HumanReadableTimestamp(timeInterval: playbackModel.timeLeftInBook).stringDescription
-        let formatString = Strings.ScrubberView.timeRemaining
+        let formatString = Strings.PlaybackSlider.timeRemaining
         return String(format: formatString, timeLeft)
     }
     
