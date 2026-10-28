@@ -1,14 +1,26 @@
-# Build
+# E-kirjasto Audiobook Toolkit
 
-Open `NYPLAudiobookToolkit.xcodeproj` and build **NYPLAudiobookToolkit** target.
+An iOS framework for audiobook playback in the E-kirjasto iOS app.
 
-Project development environment:
+## Build
 
-- Xcode: 12.4
+Requirements:
 
-# How to integrate ios-audiobooktoolkit into your project
+- Xcode 27.1
+- iOS 15 or later
 
-1) Edit your Cartfile: `github "ThePalaceProject/ios-audiobooktoolkit"`
-2) Open Access Support is built-in. Other DRM providers will require licenses.
-3) Ensure host has "Background Modes" enabled in Build Settings: Allow audio playback and airplay from the background.
+Open `PalaceAudiobookToolkit.xcodeproj` and build **PalaceAudiobookToolkit** target.
 
+## Integration
+
+Add the framework using Carthage:
+
+```text
+github "ThePalaceProject/ios-audiobooktoolkit"
+```
+
+Open Access support is included. Other DRM providers may require separate
+licenses.
+
+The host application must enable the **Background Modes** capability with
+audio playback enabled.
