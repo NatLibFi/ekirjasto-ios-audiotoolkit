@@ -158,7 +158,7 @@ public func move(cursor: Cursor<SpineElement>, to destination: ChapterLocation) 
 ///
 /// - Parameters:
 ///   - currentOffset: Current playhead offset of the current spine element / chapter
-///   - chapterDuration: Full duration of the spine element / chapter (end of scrubber)
+///   - chapterDuration: Full duration of the spine element / chapter (end of playback slider)
 ///   - skipTime: The requested skip time interval
 /// - Returns: The new Playhead Offset location that should be set
 public func adjustedPlayheadOffset(currentPlayheadOffset currentOffset: TimeInterval,

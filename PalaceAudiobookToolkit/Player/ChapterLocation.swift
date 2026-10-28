@@ -104,8 +104,12 @@ import Foundation
             part = try legacyValues.decode(UInt.self, forKey: .part)
             duration = Double(try legacyValues.decode(Float.self, forKey: .duration))
             playheadOffset = Double(try legacyValues.decode(Float.self, forKey: .playheadOffset))
-            chapterOffset = Double(try legacyValues.decode(Float.self, forKey: .startOffset))
-            lastSavedTimeStamp = try legacyValues.decode(String.self, forKey: .lastSavedTimeStamp)
+            if let startOffset = try legacyValues.decodeIfPresent(Float.self, forKey: .startOffset) {
+                chapterOffset = Double(startOffset)
+            } else {
+                chapterOffset = nil
+            }
+            lastSavedTimeStamp = try legacyValues.decodeIfPresent(String.self, forKey: .lastSavedTimeStamp) ?? ""
             return
         }
         
@@ -113,11 +117,15 @@ import Foundation
         title = try values.decode(String.self, forKey: .title)
         number = try values.decode(UInt.self, forKey: .number)
         part = try values.decode(UInt.self, forKey: .part)
-        duration = Double(try values.decode(Int.self, forKey: .duration)/1000)
-        playheadOffset = Double(try values.decode(Int.self, forKey: .playheadOffset)/1000)
-        chapterOffset = Double(try values.decode(Int.self, forKey: .startOffset)/1000)
-        annotationId = try values.decode(String.self, forKey: .annotationId)
-        lastSavedTimeStamp = try values.decode(String.self, forKey: .lastSavedTimeStamp)
+        duration = Double(try values.decode(Int.self, forKey: .duration)) / 1000
+        playheadOffset = Double(try values.decode(Int.self, forKey: .playheadOffset)) / 1000
+        if let startOffset = try values.decodeIfPresent(Int.self, forKey: .startOffset) {
+            chapterOffset = Double(startOffset) / 1000
+        } else {
+            chapterOffset = nil
+        }
+        annotationId = try values.decodeIfPresent(String.self, forKey: .annotationId) ?? ""
+        lastSavedTimeStamp = try values.decodeIfPresent(String.self, forKey: .lastSavedTimeStamp) ?? ""
     }
     
     public func encode(to encoder: Encoder) throws {

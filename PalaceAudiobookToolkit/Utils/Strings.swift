@@ -73,7 +73,7 @@ struct Strings {
         static let forward = NSLocalizedString("Fast Forward %d seconds", value: "Fast Forward %d seconds", comment: "Fast forward a configurable number of seconds")
     }
     
-    struct ScrubberView {
+    struct PlaybackSlider {
         static let timeRemaining = NSLocalizedString("%@ remaining", value: "%@ remaining", comment: "The amount of hours and minutes left")
         static let timeRemainingInBook = NSLocalizedString("%@ remaining in the book.",
                                                           value: "%@ remaining in the book.",

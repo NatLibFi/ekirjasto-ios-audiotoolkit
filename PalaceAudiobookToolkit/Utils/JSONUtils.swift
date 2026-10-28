@@ -59,6 +59,7 @@ class JSONUtils {
             rVal = String(n)
         } else if let d = jsonObj as? NSNumber {
             let formatter = NumberFormatter()
+            formatter.locale = Locale(identifier: "en_US_POSIX")
             formatter.numberStyle = .scientific
             guard let formattedDecimal = formatter.string(from: d) else {
                 throw JSONCanonicalizatoinError.canonicalizationError("Could not format decimal value")

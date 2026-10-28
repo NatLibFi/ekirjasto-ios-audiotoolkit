@@ -138,7 +138,7 @@ class AudiobookPlaybackModel: ObservableObject, PlayerDelegate, AudiobookManager
         let offset = duration * value
         guard let requestedOffset = self.currentLocation?.update(playheadOffset: offset),
         let currentOffset = self.currentLocation else {
-            ATLog(.error, "Scrubber attempted to scrub without a current chapter.")
+            ATLog(.error, "Playback slider attempted to seek without a current chapter.")
             return
         }
         self.isWaitingForPlayer = true
