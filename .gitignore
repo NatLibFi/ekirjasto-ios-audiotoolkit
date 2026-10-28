@@ -30,3 +30,7 @@ NYPLAEToolkit.framework/
 
 #binary spec for carthage
 AudioEngine.json
+
+# Ignore personal Codex instructions
+AGENTS.override.md
+**/AGENTS.override.md
