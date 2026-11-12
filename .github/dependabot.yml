@@ -1,19 +1,12 @@
 # https://docs.github.com/en/code-security/reference/supply-chain-security/dependabot-options-reference
 version: 2
 updates:
-  - package-ecosystem: "npm"
+  # Swift packages declared in PalaceAudiobookToolkit.xcodeproj.
+  - package-ecosystem: "swift"
     directory: "/"
     schedule:
-      interval: "daily"
-    versioning-strategy: increase-if-necessary
-
-  - package-ecosystem: "pip"
-    directory: "/"
-    schedule:
-      interval: "daily"
-    versioning-strategy: increase-if-necessary
-
-  - package-ecosystem: "github-actions"
-    directory: "/"
-    schedule:
-      interval: "daily"
+      interval: "weekly"
+      day: "monday"
+      time: "09:00"
+      timezone: "Europe/Helsinki"
+    open-pull-requests-limit: 5
